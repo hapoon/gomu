@@ -107,6 +107,7 @@ func (b Bool) MarshalText() ([]byte, error) {
 // SetValid changes Bool value and also sets Valid to be true
 func (b *Bool) SetValid(v bool) {
 	b.Bool = v
+	b.Null = false
 	b.Valid = true
 }
 

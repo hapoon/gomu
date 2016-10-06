@@ -1,6 +1,7 @@
 package gomu
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -56,14 +57,15 @@ func (s *String) UnmarshalJSON(data []byte) (err error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (s *String) UnmarshalText(text []byte) (err error) {
 	s.String = string(text)
-	s.Valid = true
+	s.Null = s.String == "null"
+	s.Valid = s.String != ""
 	return
 }
 
 // MarshalJSON implements json.Marshaler.
 func (s String) MarshalJSON() ([]byte, error) {
 	if !s.Valid {
-		return nil, nil
+		return []byte("null"), nil
 	}
 	if s.Null {
 		return []byte("null"), nil
@@ -74,7 +76,7 @@ func (s String) MarshalJSON() ([]byte, error) {
 // MarshalText implements encoding.TextMarshaler.
 func (s String) MarshalText() ([]byte, error) {
 	if !s.Valid {
-		return []byte{}, nil
+		return nil, nil
 	}
 	if s.Null {
 		return []byte("null"), nil
@@ -94,4 +96,26 @@ func (s String) Ptr() *string {
 		return nil
 	}
 	return &s.String
+}
+
+// Scan implements database/sql.Scanner.
+func (s *String) Scan(value interface{}) (err error) {
+	switch x := value.(type) {
+	case string:
+		s.String = x
+	case nil:
+		s.Null = true
+	default:
+		err = fmt.Errorf("gomu: cannot scan type %T into gomu.String: %v", value, value)
+	}
+	s.Valid = err == nil
+	return
+}
+
+// Value implements database/sql.Vauler.
+func (s String) Value() (driver.Value, error) {
+	if !s.Valid || s.Null {
+		return nil, nil
+	}
+	return driver.Value(s.String), nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testStruct struct {
+type testStructBool struct {
 	IsClear Bool `json:"isClear"`
 }
 
@@ -54,8 +54,8 @@ func TestBoolFromPtr(t *testing.T) {
 func TestUnmarshalJSONBool(t *testing.T) {
 	// normal pattern(key and value assigned))
 	j := []byte(`{"isClear":true}`)
-	ts := testStruct{}
-	expect := testStruct{
+	ts := testStructBool{}
+	expect := testStructBool{
 		IsClear: Bool{
 			Bool:  true,
 			Null:  false,
@@ -66,8 +66,8 @@ func TestUnmarshalJSONBool(t *testing.T) {
 	assert.Equal(t, ts, expect, "not equal")
 	// value is Null
 	j = []byte(`{"isClear":null}`)
-	ts = testStruct{}
-	expect = testStruct{
+	ts = testStructBool{}
+	expect = testStructBool{
 		IsClear: Bool{
 			Bool:  false,
 			Null:  true,
@@ -78,8 +78,8 @@ func TestUnmarshalJSONBool(t *testing.T) {
 	assert.Equal(t, ts, expect, "not equal")
 	// key is not assigned
 	j = []byte(`{}`)
-	ts = testStruct{}
-	expect = testStruct{
+	ts = testStructBool{}
+	expect = testStructBool{
 		IsClear: Bool{
 			Bool:  false,
 			Null:  false,
@@ -145,7 +145,7 @@ func TestUnmarshalTextBool(t *testing.T) {
 
 func TestMarshalJSONBool(t *testing.T) {
 	// normal key=isClear value=true
-	j := testStruct{
+	j := testStructBool{
 		IsClear: BoolFrom(true),
 	}
 	expect := []byte(`{"isClear":true}`)
@@ -153,7 +153,7 @@ func TestMarshalJSONBool(t *testing.T) {
 	checkError(err)
 	assert.Equal(t, data, expect, `MarshalJSON(true) fail`)
 	// normal key=isClear value=null
-	j = testStruct{
+	j = testStructBool{
 		IsClear: Bool{
 			Bool:  false,
 			Null:  true,
@@ -165,7 +165,7 @@ func TestMarshalJSONBool(t *testing.T) {
 	checkError(err)
 	assert.Equal(t, data, expect, `MarshalJSON(null) fail`)
 	// normal key not assigned
-	j = testStruct{
+	j = testStructBool{
 		IsClear: Bool{
 			Bool:  false,
 			Null:  false,
