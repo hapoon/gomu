@@ -48,7 +48,7 @@ func (s *String) UnmarshalJSON(data []byte) (err error) {
 	case nil:
 		s.Null = true
 	default:
-		err = fmt.Errorf("json: cannot unmarshal %v into Go value of type nzgo.String", reflect.TypeOf(v).Name())
+		err = fmt.Errorf("json: cannot unmarshal %v into Go value of type gomu.String", reflect.TypeOf(v).Name())
 	}
 	s.Valid = err == nil
 	return
