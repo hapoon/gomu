@@ -2,7 +2,6 @@ package gomu
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 
@@ -274,7 +273,6 @@ func TestValueTime(t *testing.T) {
 	}
 	expect := timeObj
 	target, err := ts.Value()
-	fmt.Printf("%+v\n", target)
 	checkError(err)
 	assert.Equal(t, target, expect, "Value "+timeString+"fail")
 }
