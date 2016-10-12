@@ -16,7 +16,11 @@ type ParamValidator func(str string, params ...string) bool
 type CustomTypeValidator func(i interface{}, o interface{}) bool
 
 // TagMap is a map of functions, that can be used as tags for Validate function.
-var TagMap = map[string]Validator{}
+var TagMap = map[string]Validator{
+	"url":    IsURL,
+	"requrl": IsRequestURL,
+	"requri": IsRequestURI,
+}
 
 type tagOptionsMap map[string]string
 

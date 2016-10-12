@@ -2,6 +2,7 @@ package gomu
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 	"unicode"
@@ -117,9 +118,35 @@ func typeCheck(v reflect.Value, t reflect.StructField, o reflect.Value) (bool, e
 								return false, Error{Name: t.Name, Err: err, CustomErrorMessageExists: customMsgExists}
 							}
 						default:
-							return false, Error{t.Name, fmt.Errorf("Validator %s doesn't support kind %s", validator, v.Type()), false}
+							return false, Error{t.Name, fmt.Errorf("Validator %s doesn't support type %s", validator, v.Type()), false}
 						}
 					}
+				}
+			}
+
+			if validatefunc, ok := TagMap[validator]; ok {
+				switch v.Type() {
+				case reflect.TypeOf(String{}):
+					field := fmt.Sprint(v.FieldByName("String"))
+					if result := validatefunc(field); !result && !negate || result && negate {
+						var err error
+						if !negate {
+							if customMsgExists {
+								err = fmt.Errorf(customErrorMessage)
+							} else {
+								err = fmt.Errorf("%s does not validate as %s", field, validator)
+							}
+						} else {
+							if customMsgExists {
+								err = fmt.Errorf(customErrorMessage)
+							} else {
+								err = fmt.Errorf("%s does validate as %s", field, validator)
+							}
+						}
+						return false, Error{t.Name, err, customMsgExists}
+					}
+				default:
+					return false, Error{t.Name, fmt.Errorf("Validator %s doesn't support type %s", validator, v.Type()), false}
 				}
 			}
 		}
@@ -194,6 +221,44 @@ func checkRequired(v reflect.Value, t reflect.StructField, options tagOptionsMap
 		return false, Error{t.Name, fmt.Errorf("non zero value required"), true}
 	}
 	return true, nil
+}
+
+// IsURL check if the string is an URL.
+func IsURL(str string) bool {
+	if str == "" || len(str) >= 2083 || len(str) <= 3 || strings.HasPrefix(str, ".") {
+		return false
+	}
+	u, err := url.Parse(str)
+	if err != nil {
+		return false
+	}
+	if strings.HasPrefix(u.Host, ".") {
+		return false
+	}
+	if u.Host == "" && (u.Path != "" && !strings.Contains(u.Path, ".")) {
+		return false
+	}
+	return rxURL.MatchString(str)
+}
+
+// IsRequestURL check if the string rawurl, assuming it was recieved in an HTTP request,
+// is a valid URL confirm to RFC 3986.
+func IsRequestURL(rawurl string) bool {
+	url, err := url.ParseRequestURI(rawurl)
+	if err != nil {
+		return false
+	}
+	if len(url.Scheme) == 0 {
+		return false
+	}
+	return true
+}
+
+// IsRequestURI check if the string rawurl, assuming it was recieved in an HTTP request,
+// is an absolute URI or an absolute path.
+func IsRequestURI(rawurl string) bool {
+	_, err := url.ParseRequestURI(rawurl)
+	return err == nil
 }
 
 // StringLength check string's length(including multi byte strings)
