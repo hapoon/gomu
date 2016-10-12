@@ -2,12 +2,9 @@ test:
 	go test -cover
 	go vet
 
-install-glide:
-	curl https://glide.sh/get | sh
-
-deps: install-glide
+deps:
 	GO15VENDOREXPERIMENT=1 glide install --cache
 
-deps-update: install-glide
+deps-update:
 	rm -rf ./vendor
 	GO15VENDOREXPERIMENT=1 glide update --cache
