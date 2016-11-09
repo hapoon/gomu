@@ -2,3 +2,7 @@ package: github.com/hapoon/gomu
 import:
 - package: github.com/stretchr/testify
   version: ~1.1.4
+- package: github.com/go-sql-driver/mysql
+  version: ^1.2.0
+- package: gopkg.in/gorp.v1
+  version: v1.7.1

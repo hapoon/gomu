@@ -100,16 +100,15 @@ func (s String) Ptr() *string {
 
 // Scan implements database/sql.Scanner.
 func (s *String) Scan(value interface{}) (err error) {
-	switch x := value.(type) {
-	case string:
-		s.String = x
-	case nil:
+	if value == nil {
+		s.String = ""
 		s.Null = true
-	default:
-		err = fmt.Errorf("gomu: cannot scan type %T into gomu.String: %v", value, value)
+		s.Valid = true
+		return
 	}
-	s.Valid = err == nil
-	return
+	s.Null = false
+	s.Valid = true
+	return convertAssign(&s.String, value)
 }
 
 // Value implements database/sql.Vauler.

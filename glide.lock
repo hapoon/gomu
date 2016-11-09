@@ -1,6 +1,20 @@
-hash: e870fd93d943f9b490862076d798a266a42e01030462d049a016d1eb09fa35aa
-updated: 2016-10-05T19:17:15.376555974+09:00
+hash: 37d0ca878e9c6d926314aef43e339af41a38a0ec87b28d74fc7e65f2b3e9e5c9
+updated: 2016-11-08T19:25:32.529050468+09:00
 imports:
+- name: github.com/go-sql-driver/mysql
+  version: a732e14c62dde3285440047bba97581bc472ae18
 - name: github.com/stretchr/testify
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
-testImports: []
+  subpackages:
+  - assert
+- name: gopkg.in/gorp.v1
+  version: c87af80f3cc5036b55b83d77171e156791085e2e
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
