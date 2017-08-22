@@ -97,6 +97,7 @@ func TestValidateIsRequestURL(t *testing.T) {
 	}{
 		{testStructReqURL{StringFrom("")}, false},
 		{testStructReqURL{StringFrom("http://sample.com")}, true},
+		{testStructReqURL{StringFromPtr(nil)}, true},
 	}
 	for _, test := range tests2 {
 		actual, err := Validate(test.param)

@@ -210,6 +210,57 @@ func isEmptyValue(v reflect.Value) bool {
 	case reflect.Interface, reflect.Ptr:
 		return v.IsNil()
 	}
+
+	// gomu struct Null check
+	if v.Kind() == reflect.Struct {
+		var s String
+		var i Int
+		var t Time
+		var b Bool
+
+		switch v.Type() {
+		case reflect.TypeOf(s):
+			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if f, ok := v.Type().FieldByName("Null"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			if f, ok := v.Type().FieldByName("Valid"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			return reflect.DeepEqual(v.Interface(), rt.Interface())
+
+		case reflect.TypeOf(i):
+			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if f, ok := v.Type().FieldByName("Null"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			if f, ok := v.Type().FieldByName("Valid"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			return reflect.DeepEqual(v.Interface(), rt.Interface())
+
+		case reflect.TypeOf(t):
+			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if f, ok := v.Type().FieldByName("Null"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			if f, ok := v.Type().FieldByName("Valid"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			return reflect.DeepEqual(v.Interface(), rt.Interface())
+
+		case reflect.TypeOf(b):
+			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if f, ok := v.Type().FieldByName("Null"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			if f, ok := v.Type().FieldByName("Valid"); ok {
+				rt.FieldByIndex(f.Index).SetBool(true)
+			}
+			return reflect.DeepEqual(v.Interface(), rt.Interface())
+		}
+	}
+
 	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }
 
