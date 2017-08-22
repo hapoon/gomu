@@ -2,6 +2,7 @@ package gomu
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -20,6 +21,26 @@ type testStructReqURL struct {
 
 type testStructReqURI struct {
 	URI String `valid:"requri"`
+}
+
+type testStrcutGomuIntRequired struct {
+	ID Int `valid:"required"`
+}
+
+type testStructAttachedTagsGomu struct {
+	ID   Int    `valid:"required"`
+	Name String `valid:"required, stringlength(1|10)"`
+	URL  String `valid:"required, requri"`
+	Date Time   `valid:"required"`
+	Flag Bool   `valid:"required"`
+}
+
+type testGomu struct {
+	ID   Int    `valid:"required"`
+	Name String `valid:"stringlength(1|10)"`
+	URL  String `valid:"requri"`
+	Date Time   `valid:"required"`
+	Flag Bool   `valid:"required"`
 }
 
 func TestValidateStringLength(t *testing.T) {
@@ -98,6 +119,8 @@ func TestValidateIsRequestURL(t *testing.T) {
 		{testStructReqURL{StringFrom("")}, false},
 		{testStructReqURL{StringFrom("http://sample.com")}, true},
 		{testStructReqURL{StringFromPtr(nil)}, true},
+		{testStructReqURL{StringFromPtr(nil)}, true},
+		{testStructReqURL{NewString("", false, false)}, true},
 	}
 	for _, test := range tests2 {
 		actual, err := Validate(test.param)
@@ -148,5 +171,138 @@ func TestValidateIsURL(t *testing.T) {
 	for _, test := range tests {
 		actual := IsURL(test.param)
 		assert.Equal(t, test.expected, actual, "Expected IsURL(%q) to be %v, got %v", test.param, test.expected, actual)
+	}
+}
+
+func TestValidateGomuInt(t *testing.T) {
+	t.Parallel()
+
+	type testStrcutGomuInt struct {
+		ID Int
+	}
+
+	type testStrcutRequiredGomuInt struct {
+		ID Int `valid:"required"`
+	}
+
+	// not reuqired Gomu Int
+	gomuIntTests := []struct {
+		param    testStrcutGomuInt
+		expected bool
+	}{
+		{testStrcutGomuInt{Int{0, false, false}}, true},
+		{testStrcutGomuInt{IntFrom(1)}, true},
+		{testStrcutGomuInt{IntFromPtr(nil)}, true},
+	}
+
+	for _, test := range gomuIntTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
+
+	// reuqired Gomu Int
+	requiredGomuIntTests := []struct {
+		param    testStrcutRequiredGomuInt
+		expected bool
+	}{
+		{testStrcutRequiredGomuInt{Int{0, false, false}}, false},
+		{testStrcutRequiredGomuInt{IntFrom(1)}, true},
+		{testStrcutRequiredGomuInt{IntFromPtr(nil)}, false},
+	}
+
+	for _, test := range requiredGomuIntTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
+}
+
+func TestValidateGomuBool(t *testing.T) {
+	t.Parallel()
+
+	type testStrcutGomuBool struct {
+		ID Bool
+	}
+
+	type testStrcutRequiredGomuBool struct {
+		ID Bool `valid:"required"`
+	}
+
+	// not reuqired Gomu Bool
+	gomuBoolTests := []struct {
+		param    testStrcutGomuBool
+		expected bool
+	}{
+		{testStrcutGomuBool{Bool{false, false, false}}, true},
+		{testStrcutGomuBool{BoolFrom(false)}, true},
+		{testStrcutGomuBool{BoolFromPtr(nil)}, true},
+	}
+
+	for _, test := range gomuBoolTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
+
+	// reuqired Gomu Bool
+	requiredGomuBoolTests := []struct {
+		param    testStrcutRequiredGomuBool
+		expected bool
+	}{
+		{testStrcutRequiredGomuBool{Bool{false, false, false}}, false},
+		{testStrcutRequiredGomuBool{BoolFrom(false)}, true},
+		{testStrcutRequiredGomuBool{BoolFromPtr(nil)}, false},
+	}
+
+	for _, test := range requiredGomuBoolTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
+}
+
+func TestValidateGomuTime(t *testing.T) {
+	t.Parallel()
+
+	type testStrcutGomuTime struct {
+		ID Time
+	}
+
+	type testStrcutRequiredGomuTime struct {
+		ID Time `valid:"required"`
+	}
+
+	now := time.Now()
+	// not reuqired Gomu Time
+	gomuTimeTests := []struct {
+		param    testStrcutGomuTime
+		expected bool
+	}{
+		{testStrcutGomuTime{Time{time.Time{}, false, false}}, true},
+		{testStrcutGomuTime{TimeFrom(now)}, true},
+		{testStrcutGomuTime{TimeFromPtr(nil)}, true},
+	}
+
+	for _, test := range gomuTimeTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
+
+	// reuqired Gomu Time
+	requiredGomuTimeTests := []struct {
+		param    testStrcutRequiredGomuTime
+		expected bool
+	}{
+		{testStrcutRequiredGomuTime{Time{time.Time{}, false, false}}, false},
+		{testStrcutRequiredGomuTime{TimeFrom(now)}, true},
+		{testStrcutRequiredGomuTime{TimeFromPtr(nil)}, false},
+	}
+
+	for _, test := range requiredGomuTimeTests {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURL(%+v) to be %v, got %v", test.param, test.expected, actual)
 	}
 }
