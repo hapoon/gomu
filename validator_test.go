@@ -128,6 +128,22 @@ func TestValidateIsRequestURI(t *testing.T) {
 		actual := IsRequestURI(test.param)
 		assert.Equal(t, test.expected, actual, "Expected IsRequestURI(%q) to be %v, got %v", test.param, test.expected, actual)
 	}
+
+	var tests2 = []struct {
+		param    testStructReqURI
+		expected bool
+	}{
+		{testStructReqURI{StringFrom("")}, false},
+		{testStructReqURI{StringFrom("abc")}, false},
+		{testStructReqURI{StringFrom("http://sample.com")}, true},
+		{testStructReqURI{StringFromPtr(nil)}, true},
+		{testStructReqURI{NewString("", false, false)}, true},
+	}
+	for _, test := range tests2 {
+		actual, err := Validate(test.param)
+		ignoreError(err)
+		assert.Equal(t, test.expected, actual, "Expected IsRequestURI(%+v) to be %v, got %v", test.param, test.expected, actual)
+	}
 }
 
 func TestValidateIsURL(t *testing.T) {
