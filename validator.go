@@ -220,6 +220,9 @@ func isEmptyValue(v reflect.Value) bool {
 
 		switch v.Type() {
 		case reflect.TypeOf(s):
+			if result := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface()); result {
+				return result
+			}
 			rt := reflect.New(reflect.TypeOf(s)).Elem()
 			if f, ok := v.Type().FieldByName("Null"); ok {
 				rt.FieldByIndex(f.Index).SetBool(true)
@@ -230,7 +233,10 @@ func isEmptyValue(v reflect.Value) bool {
 			return reflect.DeepEqual(v.Interface(), rt.Interface())
 
 		case reflect.TypeOf(i):
-			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if result := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface()); result {
+				return result
+			}
+			rt := reflect.New(reflect.TypeOf(i)).Elem()
 			if f, ok := v.Type().FieldByName("Null"); ok {
 				rt.FieldByIndex(f.Index).SetBool(true)
 			}
@@ -240,7 +246,10 @@ func isEmptyValue(v reflect.Value) bool {
 			return reflect.DeepEqual(v.Interface(), rt.Interface())
 
 		case reflect.TypeOf(t):
-			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if result := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface()); result {
+				return result
+			}
+			rt := reflect.New(reflect.TypeOf(t)).Elem()
 			if f, ok := v.Type().FieldByName("Null"); ok {
 				rt.FieldByIndex(f.Index).SetBool(true)
 			}
@@ -250,7 +259,10 @@ func isEmptyValue(v reflect.Value) bool {
 			return reflect.DeepEqual(v.Interface(), rt.Interface())
 
 		case reflect.TypeOf(b):
-			rt := reflect.New(reflect.TypeOf(s)).Elem()
+			if result := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface()); result {
+				return result
+			}
+			rt := reflect.New(reflect.TypeOf(b)).Elem()
 			if f, ok := v.Type().FieldByName("Null"); ok {
 				rt.FieldByIndex(f.Index).SetBool(true)
 			}
